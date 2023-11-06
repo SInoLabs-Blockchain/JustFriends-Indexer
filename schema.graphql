@@ -1,0 +1,55 @@
+type AccountEntity @entity {
+  id: ID!
+  userOpHash: String!
+  sender: String!
+}
+
+type SessionEntity @entity {
+  id: String!
+  sender: String!
+  sessionUser: String!
+  startFrom: BigInt!
+  validUntil: BigInt!
+  totalAmount: BigInt!
+  deleted: Boolean!
+}
+
+type TransactionEntity @entity {
+  id: ID!
+  userOpHash: String!
+  sender: String!
+  target: String!
+  value: String!
+  data: String!
+  rejected: Boolean!
+}
+
+type Content @entity {
+  id: ID!
+  hash: String!
+  creator: String!
+  startPrice: BigInt!
+}
+
+type AccessPurchased @entity {
+  id: ID!
+  hash: String!
+  buyer: String!
+  amount: BigInt!
+  totalPrice: BigInt!
+}
+
+type AccessSold @entity {
+  id: ID!
+  hash: String!
+  seller: String!
+  amount: BigInt!
+  totalPrice: BigInt!
+}
+
+type Voted @entity {
+  id: ID!
+  hash: String!
+  address: String!
+  Type: Boolean!
+}
