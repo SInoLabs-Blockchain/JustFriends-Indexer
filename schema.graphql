@@ -24,14 +24,14 @@ type TransactionEntity @entity {
   rejected: Boolean!
 }
 
-type Content @entity {
+type ContentEntity @entity {
   id: ID!
   hash: String!
   creator: String!
-  startPrice: BigInt!
+  startedPrice: BigInt!
 }
 
-type AccessPurchased @entity {
+type AccessPurchasedEntity @entity {
   id: ID!
   hash: String!
   buyer: String!
@@ -39,7 +39,7 @@ type AccessPurchased @entity {
   totalPrice: BigInt!
 }
 
-type AccessSold @entity {
+type AccessSoldEntity @entity {
   id: ID!
   hash: String!
   seller: String!
@@ -47,9 +47,9 @@ type AccessSold @entity {
   totalPrice: BigInt!
 }
 
-type Voted @entity {
+type VotedEntity @entity {
   id: ID!
   hash: String!
-  address: String!
-  Type: Boolean!
+  account: String!
+  type: Boolean!
 }
