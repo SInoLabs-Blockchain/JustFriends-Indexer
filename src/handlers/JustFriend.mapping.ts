@@ -56,6 +56,7 @@ export function handleUpvoted(event: Upvoted): void {
   entity.hash = event.params.hash.toHexString();
   entity.account = event.params.account.toHexString();
   entity.type = true;
+  entity.timestamp = Date.now().toString();
   entity.save();
 }
 
