@@ -16,6 +16,7 @@ export function handleAccountDeployed(event: AccountDeployed): void {
   entity.userOpHash = event.params.userOpHash.toHexString();
   entity.sender = event.params.sender.toHexString();
   entity.save();
+
   SimpleAccountTemplate.create(event.params.sender);
 }
 
@@ -24,7 +25,6 @@ export function handleUserOperationEvent(event: UserOperationEvent): void {
     event.params.sender.toHexString(),
     event.params.success.toString(),
   ]);
-
   const id = event.transaction.hash.toHex();
   let entity = TransactionEntity.load(id);
   if (entity == null) {

@@ -10,7 +10,7 @@ dataSources:
     source:
       address: "0x7E4F0bfB77eba984Fb3F81910F555F429671225c"
       abi: EntryPoint
-      startBlock: 132677732
+      startBlock: 138461270
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -34,7 +34,7 @@ dataSources:
     source:
       address: "0x8CDd3fee93Ad5FE5D9d6DBFdeB96f9B169b810e0"
       abi: SimpleAccountFactory
-      startBlock: 132677732
+      startBlock: 138461270
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -52,9 +52,9 @@ dataSources:
     name: JustFriends
     network: mainnet
     source:
-      address: "0xC5A4a4d63bBf5E2f22B17D3E5B3b5F01e3b91010"
+      address: "0x67b1b611BF9C04c246694DF1F9f543F3E7E67940"
       abi: JustFriends
-      startBlock: 132677732
+      startBlock: 138461270
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -74,9 +74,9 @@ dataSources:
           handler: handleAccessPurchased
         - event: AccessSold(indexed bytes32,indexed address,uint256,uint256)
           handler: handleAccessSold
-        - event: Upvoted(indexed bytes32,indexed address)
+        - event: Upvoted(indexed bytes32,indexed address,indexed address)
           handler: handleUpvoted
-        - event: Downvoted(indexed bytes32,indexed address)
+        - event: Downvoted(indexed bytes32,indexed address,indexed address)
           handler: handleDownvoted
       file: ./src/handlers/JustFriend.mapping.ts
 templates:
