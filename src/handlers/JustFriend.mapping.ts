@@ -11,8 +11,9 @@ import {
   AccessSoldEntity,
   VotedEntity,
   CreatorEntity,
+  UserPostEntity,
 } from "../../generated/schema";
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
 export function handleContentCreated(event: ContentCreated): void {
   log.info("Event ContentCreated: target={}", [
@@ -25,7 +26,6 @@ export function handleContentCreated(event: ContentCreated): void {
   contentEntity.startedPrice = event.params.startedPrice;
   contentEntity.timestamp = event.block.timestamp;
   contentEntity.save();
-
   var creatorEntity = CreatorEntity.load(event.params.creator.toHexString());
   if (creatorEntity == null) {
     creatorEntity = new CreatorEntity(event.params.creator.toHexString());
@@ -45,18 +45,24 @@ export function handleAccessPurchased(event: AccessPurchased): void {
   entity.amount = event.params.amount;
   entity.totalPrice = event.params.totalPrice;
   entity.save();
+
+  var userPostEnt = new UserPostEntity(event.params.buyer.toHexString());
+  userPostEnt.account = event.params.buyer.toHexString();
+  userPostEnt.content = event.params.hash.toHexString();
+  userPostEnt.save();
 }
 
 export function handleAccessSold(event: AccessSold): void {
   log.info("Event AccessSold: hash={}", [event.params.hash.toHexString()]);
   const hash = event.transaction.hash.toHex();
-
   var entity = new AccessSoldEntity(hash);
   entity.hash = event.params.hash.toHexString();
   entity.seller = event.params.seller.toHexString();
   entity.amount = event.params.amount;
   entity.totalPrice = event.params.totalPrice;
   entity.save();
+
+  store.remove('UserPostEntity', event.params.seller.toHexString());
 }
 
 export function handleUpvoted(event: Upvoted): void {
@@ -68,15 +74,12 @@ export function handleUpvoted(event: Upvoted): void {
   entity.type = true;
   entity.timestamp = event.block.timestamp;
   entity.save();
-
+  const coefficientUp = new BigInt(10)
+  const coefficientDown = new BigInt(8)
   var creatorEntity = CreatorEntity.load(event.params.creator.toHexString());
   if (creatorEntity != null) {
     creatorEntity.totalUpVote = creatorEntity.totalUpVote.plus(new BigInt(1));
-    creatorEntity.creditScore = new BigInt(
-      creatorEntity.totalUpVote.minus(
-        creatorEntity.totalDownVote.times(new BigInt(8)).div(new BigInt(10))
-      )
-    );
+    creatorEntity.creditScore = (creatorEntity.totalUpVote.times(coefficientUp).minus(creatorEntity.totalDownVote.times(coefficientDown))).div(coefficientUp)
   }
 }
 
@@ -89,16 +92,13 @@ export function handleDownvoted(event: Downvoted): void {
   entity.type = false;
   entity.timestamp = event.block.timestamp;
   entity.save();
-
+  const coefficientUp = new BigInt(10)
+  const coefficientDown = new BigInt(8)
   var creatorEntity = CreatorEntity.load(event.params.creator.toHexString());
   if (creatorEntity != null) {
     creatorEntity.totalDownVote = creatorEntity.totalDownVote.plus(
       new BigInt(1)
     );
-    creatorEntity.creditScore = new BigInt(
-      creatorEntity.totalUpVote.minus(
-        creatorEntity.totalDownVote.times(new BigInt(8)).div(new BigInt(10))
-      )
-    );
+    creatorEntity.creditScore = (creatorEntity.totalUpVote.times(coefficientUp).minus(creatorEntity.totalDownVote.times(coefficientDown))).div(coefficientUp);
   }
 }

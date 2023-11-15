@@ -63,3 +63,9 @@ type VotedEntity @entity {
   type: Boolean!
   timestamp: BigInt!
 }
+
+type UserPostEntity @entity{
+  id: ID!
+  account: String!
+  content: String!
+}
