@@ -46,7 +46,9 @@ export function handleAccessPurchased(event: AccessPurchased): void {
   entity.totalPrice = event.params.totalPrice;
   entity.save();
 
-  var userPostEnt = new UserPostEntity(event.params.buyer.toHexString());
+  var userPostEnt = new UserPostEntity(
+    event.params.hash.toHexString() + "-" + event.params.buyer.toHexString()
+  );
   userPostEnt.account = event.params.buyer.toHexString();
   userPostEnt.content = event.params.hash.toHexString();
   userPostEnt.save();
@@ -62,7 +64,10 @@ export function handleAccessSold(event: AccessSold): void {
   entity.totalPrice = event.params.totalPrice;
   entity.save();
 
-  store.remove('UserPostEntity', event.params.seller.toHexString());
+  store.remove(
+    "UserPostEntity",
+    event.params.hash.toHexString() + "-" + event.params.seller.toHexString()
+  );
 }
 
 export function handleUpvoted(event: Upvoted): void {
@@ -74,12 +79,14 @@ export function handleUpvoted(event: Upvoted): void {
   entity.type = true;
   entity.timestamp = event.block.timestamp;
   entity.save();
-  const coefficientUp = new BigInt(10)
-  const coefficientDown = new BigInt(8)
+  const coefficientUp = new BigInt(10);
+  const coefficientDown = new BigInt(8);
   var creatorEntity = CreatorEntity.load(event.params.creator.toHexString());
   if (creatorEntity != null) {
     creatorEntity.totalUpVote = creatorEntity.totalUpVote.plus(new BigInt(1));
-    creatorEntity.creditScore = (creatorEntity.totalUpVote.times(coefficientUp).minus(creatorEntity.totalDownVote.times(coefficientDown))).div(coefficientUp)
+    creatorEntity.creditScore = creatorEntity.totalUpVote
+      .times(coefficientUp)
+      .minus(creatorEntity.totalDownVote.times(coefficientDown));
   }
 }
 
@@ -92,13 +99,15 @@ export function handleDownvoted(event: Downvoted): void {
   entity.type = false;
   entity.timestamp = event.block.timestamp;
   entity.save();
-  const coefficientUp = new BigInt(10)
-  const coefficientDown = new BigInt(8)
+  const coefficientUp = new BigInt(10);
+  const coefficientDown = new BigInt(8);
   var creatorEntity = CreatorEntity.load(event.params.creator.toHexString());
   if (creatorEntity != null) {
     creatorEntity.totalDownVote = creatorEntity.totalDownVote.plus(
       new BigInt(1)
     );
-    creatorEntity.creditScore = (creatorEntity.totalUpVote.times(coefficientUp).minus(creatorEntity.totalDownVote.times(coefficientDown))).div(coefficientUp);
+    creatorEntity.creditScore = creatorEntity.totalUpVote
+      .times(coefficientUp)
+      .minus(creatorEntity.totalDownVote.times(coefficientDown));
   }
 }
