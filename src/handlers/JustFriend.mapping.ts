@@ -25,6 +25,7 @@ export function handleContentCreated(event: ContentCreated): void {
   contentEntity.creator = event.params.creator.toHexString();
   contentEntity.startedPrice = event.params.startedPrice;
   contentEntity.timestamp = event.block.timestamp;
+  contentEntity.isPaid = event.params.isPaid;
   contentEntity.save();
   var creatorEntity = CreatorEntity.load(event.params.creator.toHexString());
   if (creatorEntity == null) {

@@ -30,6 +30,7 @@ type ContentEntity @entity {
   creator: String!
   startedPrice: BigInt!
   timestamp: BigInt!
+  isPaid: Boolean!
 }
 
 type CreatorEntity @entity {
@@ -64,7 +65,7 @@ type VotedEntity @entity {
   timestamp: BigInt!
 }
 
-type UserPostEntity @entity{
+type UserPostEntity @entity {
   id: ID!
   account: String!
   content: String!

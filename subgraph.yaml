@@ -10,7 +10,7 @@ dataSources:
     source:
       address: "0x7E4F0bfB77eba984Fb3F81910F555F429671225c"
       abi: EntryPoint
-      startBlock: 138461270
+      startBlock: 138554753
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -34,7 +34,7 @@ dataSources:
     source:
       address: "0x8CDd3fee93Ad5FE5D9d6DBFdeB96f9B169b810e0"
       abi: SimpleAccountFactory
-      startBlock: 138461270
+      startBlock: 138554753
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -52,9 +52,9 @@ dataSources:
     name: JustFriends
     network: mainnet
     source:
-      address: "0x67b1b611BF9C04c246694DF1F9f543F3E7E67940"
+      address: "0x2B32fC9beaAfbfB0296403Cc2fa91aB2b16Daf87"
       abi: JustFriends
-      startBlock: 138461270
+      startBlock: 138554753
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -68,7 +68,7 @@ dataSources:
         - name: JustFriends
           file: ./abis/JustFriends.json
       eventHandlers:
-        - event: ContentCreated(indexed bytes32,indexed address,uint256)
+        - event: ContentCreated(indexed bytes32,indexed address,uint256,bool)
           handler: handleContentCreated
         - event: AccessPurchased(indexed bytes32,indexed address,uint256,uint256)
           handler: handleAccessPurchased
