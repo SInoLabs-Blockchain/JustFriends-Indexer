@@ -35,6 +35,12 @@ export function handleContentCreated(event: ContentCreated): void {
     creatorEntity.totalDownVote = new BigInt(0);
     creatorEntity.creditScore = new BigInt(0);
   }
+  var userPostEnt = new UserPostEntity(
+    event.params.hash.toHexString() + "-" + event.params.creator.toHexString()
+  );
+  userPostEnt.account = event.params.creator.toHexString();
+  userPostEnt.content = event.params.hash.toHexString();
+  userPostEnt.save();
 }
 
 export function handleAccessPurchased(event: AccessPurchased): void {
