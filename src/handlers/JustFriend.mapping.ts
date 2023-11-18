@@ -74,12 +74,15 @@ export function handleAccessSold(event: AccessSold): void {
   asEnt.save();
   const userPostId = event.params.hash.toHexString() + "-" + event.params.seller.toHexString();
   var userPostEnt = UserPostEntity.load(userPostId);
-  if(!userPostEnt?.isOwner){
-    store.remove(
-      "UserPostEntity",
-      event.params.hash.toHexString() + "-" + event.params.seller.toHexString()
-    );
+  if(userPostEnt != null){
+    if(!userPostEnt.isOwner){
+      store.remove(
+        "UserPostEntity",
+        event.params.hash.toHexString() + "-" + event.params.seller.toHexString()
+      );
+    }
   }
+ 
 }
 
 export function handleUpvoted(event: Upvoted): void {
