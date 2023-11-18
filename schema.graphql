@@ -69,4 +69,6 @@ type UserPostEntity @entity {
   id: ID!
   account: String!
   content: String!
+  isOwner: Boolean!
 }
+

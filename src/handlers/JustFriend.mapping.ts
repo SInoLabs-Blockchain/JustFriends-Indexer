@@ -40,6 +40,7 @@ export function handleContentCreated(event: ContentCreated): void {
   );
   userPostEnt.account = event.params.creator.toHexString();
   userPostEnt.content = event.params.hash.toHexString();
+  userPostEnt.isOwner = true;
   userPostEnt.save();
 }
 
@@ -58,6 +59,7 @@ export function handleAccessPurchased(event: AccessPurchased): void {
   );
   userPostEnt.account = event.params.buyer.toHexString();
   userPostEnt.content = event.params.hash.toHexString();
+  userPostEnt.isOwner = false;
   userPostEnt.save();
 }
 
@@ -70,11 +72,14 @@ export function handleAccessSold(event: AccessSold): void {
   entity.amount = event.params.amount;
   entity.totalPrice = event.params.totalPrice;
   entity.save();
-
-  store.remove(
-    "UserPostEntity",
-    event.params.hash.toHexString() + "-" + event.params.seller.toHexString()
-  );
+  const userPostId = event.params.hash.toHexString() + "-" + event.params.seller.toHexString();
+  var userPostEnt = UserPostEntity.load(userPostId);
+  if(!userPostEnt?.isOwner){
+    store.remove(
+      "UserPostEntity",
+      event.params.hash.toHexString() + "-" + event.params.seller.toHexString()
+    );
+  }
 }
 
 export function handleUpvoted(event: Upvoted): void {
