@@ -27,7 +27,11 @@ export function handleContentCreated(event: ContentCreated): void {
   contentEnt.startedPrice = event.params.startedPrice;
   contentEnt.timestamp = event.block.timestamp;
   contentEnt.isPaid = event.params.isPaid;
+  contentEnt.totalUpvote = new BigInt(0);
+  contentEnt.totalDownvote = new BigInt(0);
+  contentEnt.totalSupply = new BigInt(0);
   contentEnt.save();
+  // createContent(event)
   var creatorEnt = CreatorEntity.load(event.params.creator.toHexString());
   if (creatorEnt == null) {
     creatorEnt = new CreatorEntity(event.params.creator.toHexString());
@@ -44,6 +48,17 @@ export function handleContentCreated(event: ContentCreated): void {
   userPostEnt.isOwner = true;
   userPostEnt.save();
 }
+function createContent(event: ContentCreated): void {
+  const id = event.params.hash.toHexString();
+  var contentEnt = new ContentEntity(id);
+  contentEnt.hash = event.params.hash.toHexString();
+  contentEnt.creator = event.params.creator.toHexString();
+  contentEnt.startedPrice = event.params.startedPrice;
+  contentEnt.timestamp = event.block.timestamp;
+  contentEnt.isPaid = event.params.isPaid;
+  contentEnt.save();
+}
+
 
 export function handleAccessPurchased(event: AccessPurchased): void {
   log.info("Event AccessPurchased: hash={}", [event.params.hash.toHexString()]);
@@ -113,6 +128,7 @@ export function handleUpvoted(event: Upvoted): void {
     var contentEnt = ContentEntity.load(event.params.hash.toHexString());
     if(contentEnt != null){
     contentEnt.totalDownvote = contentEnt.totalDownvote.minus(new BigInt(1))
+    contentEnt.totalUpvote = contentEnt.totalUpvote.plus(new BigInt(1))
     }
     var creatorEnt = CreatorEntity.load(event.params.creator.toHexString());
     if (creatorEnt != null) {
@@ -162,6 +178,7 @@ export function handleDownvoted(event: Downvoted): void {
     var contentEnt = ContentEntity.load(event.params.hash.toHexString());
     if(contentEnt != null){
     contentEnt.totalUpvote = contentEnt.totalUpvote.minus(new BigInt(1))
+    contentEnt.totalDownvote = contentEnt.totalDownvote.plus(new BigInt(1))
     }
     var creatorEnt = CreatorEntity.load(event.params.creator.toHexString());
     if (creatorEnt != null) {
