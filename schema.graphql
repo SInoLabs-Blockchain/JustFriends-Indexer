@@ -31,6 +31,9 @@ type ContentEntity @entity {
   startedPrice: BigInt!
   timestamp: BigInt!
   isPaid: Boolean!
+  totalUpvote: BigInt!
+  totalDownvote: BigInt!
+  totalSupply: BigInt!
 }
 
 type CreatorEntity @entity {
@@ -68,7 +71,14 @@ type VotedEntity @entity {
 type UserPostEntity @entity {
   id: ID!
   account: String!
-  content: String!
+  post: String!
   isOwner: Boolean!
+}
+
+type PostVoteEntity @entity {
+  id: ID!
+  post: String!
+  account: String!
+  type: Boolean!
 }
 

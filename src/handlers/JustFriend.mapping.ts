@@ -12,6 +12,7 @@ import {
   VotedEntity,
   CreatorEntity,
   UserPostEntity,
+  PostVoteEntity,
 } from "../../generated/schema";
 import { BigInt, log, store } from "@graphprotocol/graph-ts";
 
@@ -19,7 +20,7 @@ export function handleContentCreated(event: ContentCreated): void {
   log.info("Event ContentCreated: target={}", [
     event.params.creator.toHexString(),
   ]);
-  const id = event.transaction.hash.toHex();
+  const id = event.params.hash.toHexString();
   var contentEnt = new ContentEntity(id);
   contentEnt.hash = event.params.hash.toHexString();
   contentEnt.creator = event.params.creator.toHexString();
@@ -39,7 +40,7 @@ export function handleContentCreated(event: ContentCreated): void {
     event.params.hash.toHexString() + "-" + event.params.creator.toHexString()
   );
   userPostEnt.account = event.params.creator.toHexString();
-  userPostEnt.content = event.params.hash.toHexString();
+  userPostEnt.post = event.params.hash.toHexString();
   userPostEnt.isOwner = true;
   userPostEnt.save();
 }
@@ -53,14 +54,17 @@ export function handleAccessPurchased(event: AccessPurchased): void {
   apEnt.amount = event.params.amount;
   apEnt.totalPrice = event.params.totalPrice;
   apEnt.save();
-
   var userPostEnt = new UserPostEntity(
     event.params.hash.toHexString() + "-" + event.params.buyer.toHexString()
   );
   userPostEnt.account = event.params.buyer.toHexString();
-  userPostEnt.content = event.params.hash.toHexString();
+  userPostEnt.post = event.params.hash.toHexString();
   userPostEnt.isOwner = false;
   userPostEnt.save();
+  var contentEnt = ContentEntity.load(event.params.hash.toHexString());
+  if(contentEnt != null){
+    contentEnt.totalSupply = contentEnt.totalSupply.plus(new BigInt(1))
+  }
 }
 
 export function handleAccessSold(event: AccessSold): void {
@@ -72,6 +76,10 @@ export function handleAccessSold(event: AccessSold): void {
   asEnt.amount = event.params.amount;
   asEnt.totalPrice = event.params.totalPrice;
   asEnt.save();
+  var contentEnt = ContentEntity.load(event.params.hash.toHexString());
+  if(contentEnt != null){
+    contentEnt.totalSupply = contentEnt.totalSupply.plus(new BigInt(1))
+  }
   const userPostId = event.params.hash.toHexString() + "-" + event.params.seller.toHexString();
   var userPostEnt = UserPostEntity.load(userPostId);
   if(userPostEnt != null){
@@ -82,13 +90,12 @@ export function handleAccessSold(event: AccessSold): void {
       );
     }
   }
- 
 }
 
 export function handleUpvoted(event: Upvoted): void {
   log.info("Event UpVoted: hash={}", [event.params.hash.toHexString()]);
-  const hash = event.transaction.hash.toHex();
-  var votedEnt = new VotedEntity(hash);
+  const id = event.transaction.hash.toHex();
+  var votedEnt = new VotedEntity(id);
   votedEnt.hash = event.params.hash.toHexString();
   votedEnt.account = event.params.account.toHexString();
   votedEnt.type = true;
@@ -96,12 +103,41 @@ export function handleUpvoted(event: Upvoted): void {
   votedEnt.save();
   const coefficientUp = new BigInt(10);
   const coefficientDown = new BigInt(8);
-  var creatorEnt = CreatorEntity.load(event.params.creator.toHexString());
-  if (creatorEnt != null) {
-    creatorEnt.totalUpVote = creatorEnt.totalUpVote.plus(new BigInt(1));
-    creatorEnt.creditScore = creatorEnt.totalUpVote
+  var postVoteId = event.params.hash.toHexString() + "-" + event.params.account.toHexString();
+  var postVoteEnt = PostVoteEntity.load(postVoteId)
+  if(postVoteEnt != null && !postVoteEnt.type){
+    store.remove(
+      "PostVoteEntity",
+      event.params.hash.toHexString() + "-" + event.params.account.toHexString()
+    );
+    var contentEnt = ContentEntity.load(event.params.hash.toHexString());
+    if(contentEnt != null){
+    contentEnt.totalDownvote = contentEnt.totalDownvote.minus(new BigInt(1))
+    }
+    var creatorEnt = CreatorEntity.load(event.params.creator.toHexString());
+    if (creatorEnt != null) {
+      creatorEnt.totalDownVote = creatorEnt.totalDownVote.minus(new BigInt(1));
+      creatorEnt.creditScore = creatorEnt.totalUpVote
       .times(coefficientUp)
       .minus(creatorEnt.totalDownVote.times(coefficientDown));
+    };
+  }else{
+    var newPostVoteEnt = new PostVoteEntity(event.params.hash.toHexString() + "-" + event.params.account.toHexString())
+    newPostVoteEnt.post = event.params.hash.toHexString();
+    newPostVoteEnt.account = event.params.account.toHexString();
+    newPostVoteEnt.type = true;
+    newPostVoteEnt.save();
+    contentEnt = ContentEntity.load(event.params.hash.toHexString());
+    if(contentEnt != null){
+    contentEnt.totalUpvote = contentEnt.totalUpvote.plus(new BigInt(1))
+    }
+    creatorEnt = CreatorEntity.load(event.params.creator.toHexString());
+    if (creatorEnt != null) {
+      creatorEnt.totalUpVote = creatorEnt.totalUpVote.minus(new BigInt(1));
+      creatorEnt.creditScore = creatorEnt.totalUpVote
+      .times(coefficientUp)
+      .minus(creatorEnt.totalDownVote.times(coefficientDown));
+    };
   }
 }
 
@@ -116,13 +152,40 @@ export function handleDownvoted(event: Downvoted): void {
   votedEnt.save();
   const coefficientUp = new BigInt(10);
   const coefficientDown = new BigInt(8);
-  var creatorEnt = CreatorEntity.load(event.params.creator.toHexString());
-  if (creatorEnt != null) {
-    creatorEnt.totalDownVote = creatorEnt.totalDownVote.plus(
-      new BigInt(1)
+  var postVoteId = event.params.hash.toHexString() + "-" + event.params.account.toHexString();
+  var postVoteEnt = PostVoteEntity.load(postVoteId)
+  if(postVoteEnt != null && postVoteEnt.type){
+    store.remove(
+      "PostVoteEntity",
+      event.params.hash.toHexString() + "-" + event.params.account.toHexString()
     );
-    creatorEnt.creditScore = creatorEnt.totalUpVote
+    var contentEnt = ContentEntity.load(event.params.hash.toHexString());
+    if(contentEnt != null){
+    contentEnt.totalUpvote = contentEnt.totalUpvote.minus(new BigInt(1))
+    }
+    var creatorEnt = CreatorEntity.load(event.params.creator.toHexString());
+    if (creatorEnt != null) {
+      creatorEnt.totalUpVote = creatorEnt.totalUpVote.plus(new BigInt(1));
+      creatorEnt.creditScore = creatorEnt.totalUpVote
       .times(coefficientUp)
       .minus(creatorEnt.totalDownVote.times(coefficientDown));
+    };
+  }else{
+    var newPostVoteEnt = new PostVoteEntity(event.params.hash.toHexString() + "-" + event.params.account.toHexString())
+    newPostVoteEnt.post = event.params.hash.toHexString();
+    newPostVoteEnt.account = event.params.account.toHexString();
+    newPostVoteEnt.type = false;
+    newPostVoteEnt.save();
+    contentEnt = ContentEntity.load(event.params.hash.toHexString());
+    if(contentEnt != null){
+    contentEnt.totalDownvote = contentEnt.totalDownvote.plus(new BigInt(1))
+    }
+    creatorEnt = CreatorEntity.load(event.params.creator.toHexString());
+    if (creatorEnt != null) {
+      creatorEnt.totalDownVote = creatorEnt.totalDownVote.plus(new BigInt(1));
+      creatorEnt.creditScore = creatorEnt.totalUpVote
+      .times(coefficientUp)
+      .minus(creatorEnt.totalDownVote.times(coefficientDown));
+    };
   }
 }
