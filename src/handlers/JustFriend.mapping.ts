@@ -184,13 +184,12 @@ export function handleUpvoted(event: Upvoted): void {
       "PostVoteEntity",
       event.params.hash.toHexString() + "-" + event.params.account.toHexString()
     );
-  } else {
-    postVoteEnt = new PostVoteEntity(id);
-    postVoteEnt.post = event.params.hash.toHexString();
-    postVoteEnt.account = event.params.account.toHexString();
-    postVoteEnt.type = true;
-    postVoteEnt.save();
   }
+  postVoteEnt = new PostVoteEntity(id);
+  postVoteEnt.post = event.params.hash.toHexString();
+  postVoteEnt.account = event.params.account.toHexString();
+  postVoteEnt.type = true;
+  postVoteEnt.save();
 }
 
 export function handleDownvoted(event: Downvoted): void {
@@ -232,7 +231,9 @@ export function handleDownvoted(event: Downvoted): void {
     newVotedEnt.timestamp = event.block.timestamp;
     newVotedEnt.save();
     if (contentEnt != null) {
-      contentEnt.totalDownvote = contentEnt.totalDownvote.plus(BigInt.fromI32(1));
+      contentEnt.totalDownvote = contentEnt.totalDownvote.plus(
+        BigInt.fromI32(1)
+      );
       contentEnt.save();
     }
     if (creatorEnt != null) {
@@ -250,15 +251,12 @@ export function handleDownvoted(event: Downvoted): void {
       "PostVoteEntity",
       event.params.hash.toHexString() + "-" + event.params.account.toHexString()
     );
-  } else {
-    const id =
-      event.params.hash.toHexString() +
-      "-" +
-      event.params.account.toHexString();
-    postVoteEnt = new PostVoteEntity(id);
-    postVoteEnt.post = event.params.hash.toHexString();
-    postVoteEnt.account = event.params.account.toHexString();
-    postVoteEnt.type = false;
-    postVoteEnt.save();
   }
+  const postVotdeId =
+    event.params.hash.toHexString() + "-" + event.params.account.toHexString();
+  postVoteEnt = new PostVoteEntity(postVotdeId);
+  postVoteEnt.post = event.params.hash.toHexString();
+  postVoteEnt.account = event.params.account.toHexString();
+  postVoteEnt.type = false;
+  postVoteEnt.save();
 }
