@@ -26,7 +26,7 @@ function contentEntCreate(event: ContentCreated): void {
   contentEnt.isPaid = event.params.isPaid;
   contentEnt.totalUpvote = BigInt.fromI32(0);
   contentEnt.totalDownvote = BigInt.fromI32(0);
-  contentEnt.totalSupply = BigInt.fromI32(0);
+  contentEnt.totalSupply = BigInt.fromI32(1);
   contentEnt.save();
 }
 
