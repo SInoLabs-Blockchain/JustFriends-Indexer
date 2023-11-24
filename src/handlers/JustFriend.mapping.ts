@@ -57,6 +57,7 @@ function userPostEntPurchaseCreate(event: AccessPurchased): void {
   userPostEnt.account = event.params.buyer.toHexString();
   userPostEnt.post = event.params.hash.toHexString();
   userPostEnt.isOwner = false;
+  userPostEnt.price = event.params.totalPrice;
   userPostEnt.save();
 }
 

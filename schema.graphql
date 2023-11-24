@@ -75,6 +75,7 @@ type UserPostEntity @entity {
   account: String!
   post: String!
   isOwner: Boolean!
+  price: BigInt!
 }
 
 type PostVoteEntity @entity {
