@@ -50,6 +50,7 @@ type AccessPurchasedEntity @entity {
   buyer: String!
   amount: BigInt!
   totalPrice: BigInt!
+  timestamp: BigInt!
 }
 
 type AccessSoldEntity @entity {
@@ -58,6 +59,7 @@ type AccessSoldEntity @entity {
   seller: String!
   amount: BigInt!
   totalPrice: BigInt!
+  timestamp: BigInt!
 }
 
 type VotedEntity @entity {
@@ -81,4 +83,3 @@ type PostVoteEntity @entity {
   account: String!
   type: Boolean!
 }
-

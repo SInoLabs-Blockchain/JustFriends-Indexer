@@ -67,6 +67,7 @@ function accessPurchaseCreate(event: AccessPurchased): void {
   apEnt.buyer = event.params.buyer.toHexString();
   apEnt.amount = event.params.amount;
   apEnt.totalPrice = event.params.totalPrice;
+  apEnt.timestamp = event.block.timestamp;
   apEnt.save();
 }
 
@@ -77,6 +78,7 @@ function accessSoldCreate(event: AccessSold): void {
   asEnt.seller = event.params.seller.toHexString();
   asEnt.amount = event.params.amount;
   asEnt.totalPrice = event.params.totalPrice;
+  asEnt.timestamp = event.block.timestamp;
   asEnt.save();
 }
 
