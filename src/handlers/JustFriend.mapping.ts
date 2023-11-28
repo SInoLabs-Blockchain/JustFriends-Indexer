@@ -47,6 +47,7 @@ function userPostEntContentCreate(event: ContentCreated): void {
   userPostEnt.account = event.params.creator.toHexString();
   userPostEnt.post = event.params.hash.toHexString();
   userPostEnt.isOwner = true;
+  userPostEnt.price = event.params.startedPrice;
   userPostEnt.save();
 }
 
