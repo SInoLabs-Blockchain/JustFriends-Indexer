@@ -112,7 +112,7 @@ export function handleAccessSold(event: AccessSold): void {
   accessSoldCreate(event);
   var contentEnt = ContentEntity.load(event.params.hash.toHexString());
   if (contentEnt != null) {
-    contentEnt.totalSupply = contentEnt.totalSupply.plus(BigInt.fromI32(1));
+    contentEnt.totalSupply = contentEnt.totalSupply.minus(BigInt.fromI32(1));
     contentEnt.save();
   }
   const userPostId =
