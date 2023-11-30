@@ -1,0 +1,86 @@
+type AccountEntity @entity {
+  id: ID!
+  userOpHash: String!
+  sender: String!
+}
+
+type SessionEntity @entity {
+  id: String!
+  sender: String!
+  sessionUser: String!
+  startFrom: BigInt!
+  validUntil: BigInt!
+  totalAmount: BigInt!
+  deleted: Boolean!
+}
+
+type TransactionEntity @entity {
+  id: ID!
+  userOpHash: String!
+  sender: String!
+  target: String!
+  value: String!
+  data: String!
+  rejected: Boolean!
+}
+
+type ContentEntity @entity {
+  id: ID!
+  hash: String!
+  creator: String!
+  startedPrice: BigInt!
+  timestamp: BigInt!
+  isPaid: Boolean!
+  totalUpvote: BigInt!
+  totalDownvote: BigInt!
+  totalSupply: BigInt!
+}
+
+type CreatorEntity @entity {
+  id: ID!
+  address: String!
+  totalUpVote: BigInt!
+  totalDownVote: BigInt!
+  creditScore: BigInt!
+}
+
+type AccessPurchasedEntity @entity {
+  id: ID!
+  hash: String!
+  buyer: String!
+  amount: BigInt!
+  totalPrice: BigInt!
+  timestamp: BigInt!
+}
+
+type AccessSoldEntity @entity {
+  id: ID!
+  hash: String!
+  seller: String!
+  amount: BigInt!
+  totalPrice: BigInt!
+  timestamp: BigInt!
+}
+
+type VotedEntity @entity {
+  id: ID!
+  hash: String!
+  account: String!
+  type: Boolean!
+  timestamp: BigInt!
+}
+
+type UserPostEntity @entity {
+  id: ID!
+  account: String!
+  post: String!
+  isOwner: Boolean!
+  price: BigInt!
+}
+
+type PostVoteEntity @entity {
+  id: ID!
+  post: String!
+  account: String!
+  type: Boolean!
+}

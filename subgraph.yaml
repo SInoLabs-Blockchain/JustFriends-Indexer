@@ -1,0 +1,109 @@
+specVersion: 0.0.4
+description: Gravatar for Ethereum
+repository: https://github.com/SInoLabs-Blockchain/Indexer
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: EntryPoint
+    network: mainnet
+    source:
+      address: "0x7E4F0bfB77eba984Fb3F81910F555F429671225c"
+      abi: EntryPoint
+      startBlock: 139214750
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - AccountEntity
+        - TransactionEntity
+        - UserOperationEventEntity
+      abis:
+        - name: EntryPoint
+          file: ./abis/EntryPoint.json
+      eventHandlers:
+        - event: AccountDeployed(indexed bytes32,indexed address,address,address)
+          handler: handleAccountDeployed
+        - event: UserOperationEvent(indexed bytes32,indexed address,indexed address,uint256,bool,uint256,uint256)
+          handler: handleUserOperationEvent
+      file: ./src/handlers/EntryPoint.mapping.ts
+  - kind: ethereum/contract
+    name: SimpleAccountFactory
+    network: mainnet
+    source:
+      address: "0x8CDd3fee93Ad5FE5D9d6DBFdeB96f9B169b810e0"
+      abi: SimpleAccountFactory
+      startBlock: 139214750
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - AccountEntity
+      abis:
+        - name: SimpleAccountFactory
+          file: ./abis/SimpleAccountFactory.json
+      eventHandlers:
+        - event: AccountCreated(indexed address,indexed address)
+          handler: handleAccountCreated
+      file: ./src/handlers/SimpleAccountFactory.mapping.ts
+  - kind: ethereum/contract
+    name: JustFriends
+    network: mainnet
+    source:
+      address: "0xddff4dDf057b125C04F770127972deAB378CED73"
+      abi: JustFriends
+      startBlock: 139214750
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Content
+        - AccessPurchased
+        - AccessSold
+        - Voted
+      abis:
+        - name: JustFriends
+          file: ./abis/JustFriends.json
+      eventHandlers:
+        - event: ContentCreated(indexed bytes32,indexed address,uint256,bool)
+          handler: handleContentCreated
+        - event: AccessPurchased(indexed bytes32,indexed address,uint256,uint256)
+          handler: handleAccessPurchased
+        - event: AccessSold(indexed bytes32,indexed address,uint256,uint256)
+          handler: handleAccessSold
+        - event: Upvoted(indexed bytes32,indexed address,indexed address)
+          handler: handleUpvoted
+        - event: Downvoted(indexed bytes32,indexed address,indexed address)
+          handler: handleDownvoted
+      file: ./src/handlers/JustFriend.mapping.ts
+templates:
+  - kind: ethereum/contract
+    name: SimpleAccount
+    network: mainnet
+    source:
+      abi: SimpleAccount
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/handlers/SimpleAccount.mapping.ts
+      entities:
+        - TransactionEntity
+        - SessionEntity
+      abis:
+        - name: SimpleAccount
+          file: ./abis/SimpleAccount.json
+        - name: SimpleAccountFactory
+          file: ./abis/SimpleAccountFactory.json
+        - name: EntryPoint
+          file: ./abis/EntryPoint.json
+      eventHandlers:
+        - event: Invoked(indexed address,uint256,bytes)
+          handler: handleInvoked
+        - event: SessionCreated(indexed address,uint256,uint256,uint256)
+          handler: handleSessionCreated
+        - event: SessionRemoved(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleSessionRemoved
